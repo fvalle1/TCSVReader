@@ -1,13 +1,12 @@
 #include "TCSVReader.h"
 
-TCSVReader::TCSVReader(const TString &name):TObject(),fNumberOfLines(0){
-	fFilename=name;
+TCSVReader::TCSVReader(const TString &name):TObject(),fNumberOfLines(0),fFilename(name){
 	this->ReadFile();
 }
 
 TCSVReader::~TCSVReader(){
 	fValueVector.clear();
-};
+}
 
 
 void TCSVReader::ReadFile(){
@@ -15,7 +14,11 @@ void TCSVReader::ReadFile(){
 	TString extension(".csv");
 	this->fExtension=extension;
 	myfile.open((fFilename.Append(extension)).Data(), ios::out);
-	if(!myfile.is_open()) cout << "File " << fFilename << " not found." << endl;
+	if(!myfile.is_open())
+	{
+	cout << "File " << fFilename << " not found." << endl <<flush;
+	return;
+}
 
 	string line;
 	/*
@@ -35,38 +38,37 @@ void TCSVReader::ReadFile(){
 		token = line.substr(0, pos);
 		fValueVector.push_back(atof(token.c_str()));
 	}
-	fNumOfValues=fValueVector.size();
-	fNumOfData=fNumOfValues/4;
+	fNumOfData=fValueVector.size()/4;
 	myfile.close();
 }
 
-double* TCSVReader::GetX(){
-	double *x=new double[fNumOfData];
-	for(int i=0, j=0;i<fNumOfValues;i+=4){
+Double_t* TCSVReader::GetX(){
+	Double_t *x=new Double_t[fNumOfData];
+	for(Int_t i=0, j=0;i<fNumOfValues();i+=4){
 		x[j++]=fValueVector[i];
 	}
 	return x;
 }
 
-double* TCSVReader::GetY(){
-	double *y=new double[fNumOfData];
-	for(int i=1,j=0;i<fNumOfValues;i+=4){
+Double_t* TCSVReader::GetY(){
+	Double_t *y=new Double_t[fNumOfData];
+	for(Int_t i=1,j=0;i<fNumOfValues();i+=4){
 		y[j++]=fValueVector[i];
 	}
 	return y;
 }
 
-double* TCSVReader::GetSigmaX(){
-	double *sx=new double[fNumOfData];
-	for(int i=2,j=0;i<fNumOfValues;i+=4){
+Double_t* TCSVReader::GetSigmaX(){
+	Double_t *sx=new Double_t[fNumOfData];
+	for(Int_t i=2,j=0;i<fNumOfValues();i+=4){
 		sx[j++]=fValueVector[i];
 	}
 	return sx;
 }
 
-double* TCSVReader::GetSigmaY(){
-	double *sy=new double[fNumOfData];
-	for(int i=3,j=0;i<fNumOfValues;i+=4){
+Double_t* TCSVReader::GetSigmaY(){
+	Double_t *sy=new Double_t[fNumOfData];
+	for(Int_t i=3,j=0;i<fNumOfValues();i+=4){
 		sy[j++]=fValueVector[i];
 	}
 	return sy;

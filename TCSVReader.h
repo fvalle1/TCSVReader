@@ -11,6 +11,7 @@
 
 using std::cout;
 using std::endl;
+using std::flush;
 using std::ifstream;
 using std::ios;
 using std::string;
@@ -24,7 +25,8 @@ private:
 	Int_t fNumberOfLines;
 	vector<double> fValueVector;
 	Int_t fNumOfData;//one per point
-	Int_t fNumOfValues; //4*numOfData
+	//Int_t fNumOfValues; //4*numOfData
+	constexpr Int_t fNumOfValues() const{return 4*this->fNumOfData;};
 
 	void ReadFile();
 
@@ -32,10 +34,10 @@ public:
 	TCSVReader(const TString&);
 	~TCSVReader();
 
-	double *GetX();
-	double *GetY();
-	double *GetSigmaX();
-	double *GetSigmaY();
+	Double_t *GetX();
+	Double_t *GetY();
+	Double_t *GetSigmaX();
+	Double_t *GetSigmaY();
   inline Int_t GetSize(){return fNumOfData;};
 
 	TGraphErrors *GetTGraphErrors();

@@ -25,20 +25,21 @@ private:
 	vector<double> fValueVector;
 	Int_t fNumOfData;//one per point
 	Int_t fNumOfValues; //4*numOfData
-	
-	void readFile();
+
+	void ReadFile();
+
 public:
 	TCSVReader(const TString&);
-    ~TCSVReader(){};
-    
+	~TCSVReader();
+
 	double *GetX();
 	double *GetY();
 	double *GetSigmaX();
 	double *GetSigmaY();
-    inline Int_t GetSize(){return fNumOfData;};
-	
+  inline Int_t GetSize(){return fNumOfData;};
+
 	TGraphErrors *GetTGraphErrors();
-    TGraph *GetTGraph();
-    
-    ClassDef(TCSVReader,0);
+  TGraph *GetTGraph();
+
+  ClassDef(TCSVReader,0);
 };

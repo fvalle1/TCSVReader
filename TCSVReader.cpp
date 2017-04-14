@@ -2,10 +2,15 @@
 
 TCSVReader::TCSVReader(const TString &name):TObject(),fNumberOfLines(0){
 	fFilename=name;
-	this->readFile();
+	this->ReadFile();
 }
 
-void TCSVReader::readFile(){
+TCSVReader::~TCSVReader(){
+	fValueVector.clear();
+};
+
+
+void TCSVReader::ReadFile(){
 	ifstream myfile;
 	TString extension(".csv");
 	this->fExtension=extension;
@@ -18,7 +23,7 @@ void TCSVReader::readFile(){
 	 https://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c#14266139
 	 */
 	while(getline(myfile,line)){
-		
+
 		size_t pos = 0;
 		std::string token;
 		while ((pos = line.find(",")) != std::string::npos) {
@@ -69,7 +74,7 @@ double* TCSVReader::GetSigmaY(){
 
 TGraphErrors* TCSVReader::GetTGraphErrors(){
 	return new TGraphErrors(fNumOfData,this->GetX(),this->GetY(),this->GetSigmaX(),this->GetSigmaY());
-	
+
 }
 
 TGraph* TCSVReader::GetTGraph(){

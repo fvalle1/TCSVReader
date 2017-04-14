@@ -1,3 +1,6 @@
+#ifndef TCSVREADER_H
+#define TCSVREADER_H
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -45,3 +48,5 @@ public:
 
     ClassDef(TCSVReader,0);
 };
+
+#endif

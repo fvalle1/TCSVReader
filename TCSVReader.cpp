@@ -74,11 +74,10 @@ Double_t* TCSVReader::GetSigmaY(){
 	return sy;
 }
 
-TGraphErrors* TCSVReader::GetTGraphErrors(){
+TGraph* TCSVReader::GetTGraphErrors(){
 	return new TGraphErrors(fNumOfData,this->GetX(),this->GetY(),this->GetSigmaX(),this->GetSigmaY());
-
 }
 
 TGraph* TCSVReader::GetTGraph(){
-    return new TGraphErrors(fNumOfData,this->GetX(),this->GetY());
+    return new TGraph(fNumOfData,this->GetX(),this->GetY());
 }

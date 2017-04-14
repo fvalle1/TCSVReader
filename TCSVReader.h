@@ -20,28 +20,28 @@ using std::vector;
 
 class TCSVReader:public TObject{
 private:
-	TString fExtension;
-	TString fFilename;
-	Int_t fNumberOfLines;
-	vector<double> fValueVector;
-	Int_t fNumOfData;//one per point
-	//Int_t fNumOfValues; //4*numOfData
-	constexpr Int_t fNumOfValues() const{return 4*this->fNumOfData;};
+    TString fExtension;
+    TString fFilename;
+    Int_t fNumberOfLines;
+    vector<Double_t> fValueVector;
+    Int_t fNumOfData;//one per point
+    //Int_t fNumOfValues; //4*numOfData
+    constexpr Int_t fNumOfValues() const{return 4*this->fNumOfData;};
 
-	void ReadFile();
+    void ReadFile();
 
 public:
-	TCSVReader(const TString&);
-	~TCSVReader();
+    TCSVReader(const TString&);
+    ~TCSVReader();
 
-	Double_t *GetX();
-	Double_t *GetY();
-	Double_t *GetSigmaX();
-	Double_t *GetSigmaY();
-  inline Int_t GetSize(){return fNumOfData;};
+    Double_t *GetX();
+    Double_t *GetY();
+    Double_t *GetSigmaX();
+    Double_t *GetSigmaY();
+    inline Int_t GetSize(){return fNumOfData;};
 
-	TGraphErrors *GetTGraphErrors();
-  TGraph *GetTGraph();
+    TGraph *GetTGraphErrors();
+    TGraph *GetTGraph();
 
-  ClassDef(TCSVReader,0);
+    ClassDef(TCSVReader,0);
 };

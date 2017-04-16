@@ -29,7 +29,7 @@ private:
     vector<Double_t> fValueVector;
     Int_t fNumOfData;//one per point
     //Int_t fNumOfValues; //4*numOfData
-    constexpr Int_t fNumOfValues() const{return 4*this->fNumOfData;};
+    Int_t fNumOfValues() const{return 4*this->fNumOfData;};
 
     void ReadFile();
 

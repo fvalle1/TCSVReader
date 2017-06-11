@@ -45,6 +45,35 @@ void TCSVReader::ReadFile(){
 	myfile.close();
 }
 
+void TCSVReader::FillTree(){
+	fTree=new TTree();
+	Double_t valueBuffer[2][2];
+	fTree->Branch("x",&valueBuffer[0][0]);
+	fTree->Branch("y",&valueBuffer[1][0]);
+	fTree->Branch("sx",&valueBuffer[0][1]);
+	fTree->Branch("sy",&valueBuffer[1][1]);
+
+	for(Int_t i=0, j=0;i<fNumOfValues();i+=4){
+		valueBuffer[0][0]=fValueVector[i];
+		valueBuffer[1][0]=fValueVector[i+1];
+		valueBuffer[0][1]=fValueVector[i+2];
+		valueBuffer[1][1]=fValueVector[i+3];
+		fTree->Fill();
+	}
+
+
+}
+
+void TCSVReader::SaveTree(){
+	this->FillTree();
+	TFile *file=new TFile(fFilename.Append(".root"),"RECREATE");
+
+	file->cd();
+	fTree->Write("TreeData",TObject::kOverwrite);
+
+	file->Close();
+}
+
 Double_t* TCSVReader::GetX(){
 	Double_t *x=new Double_t[fNumOfData];
 	for(Int_t i=0, j=0;i<fNumOfValues();i+=4){
@@ -82,5 +111,5 @@ TGraph* TCSVReader::GetTGraphErrors(){
 }
 
 TGraph* TCSVReader::GetTGraph(){
-    return new TGraph(fNumOfData,this->GetX(),this->GetY());
+	return new TGraph(fNumOfData,this->GetX(),this->GetY());
 }

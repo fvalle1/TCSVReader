@@ -10,6 +10,8 @@
 #include "TGraphErrors.h"
 #include "TGraph.h"
 #include "TString.h"
+#include "TTree.h"
+#include "TFile.h"
 
 
 using std::cout;
@@ -27,11 +29,13 @@ private:
     TString fFilename;
     Int_t fNumberOfLines;
     vector<Double_t> fValueVector;
+    TTree *fTree;
     Int_t fNumOfData;//one per point
     //Int_t fNumOfValues; //4*numOfData
     Int_t fNumOfValues() const{return 4*this->fNumOfData;};
 
     void ReadFile();
+    void FillTree();
 
 public:
     TCSVReader(const TString&);
@@ -41,6 +45,7 @@ public:
     Double_t *GetY();
     Double_t *GetSigmaX();
     Double_t *GetSigmaY();
+    void SaveTree();
     inline Int_t GetSize(){return fNumOfData;};
 
     TGraph *GetTGraphErrors();

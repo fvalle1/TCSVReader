@@ -13,18 +13,19 @@ void TCSVReader::ReadFile(){
 	ifstream myfile;
 	TString extension(".csv");
 	this->fExtension=extension;
-	myfile.open((fFilename.Append(extension)).Data(), ios::out);
+	if(!fFilename.Contains("csv"))fFilename.Append(extension);
+	myfile.open(fFilename.Data(), ios::out);
 	if(!myfile.is_open())
 	{
-	cout << "File " << fFilename << " not found." << endl <<flush;
-	return;
-}
+		cout << "File " << fFilename << " not found." << endl <<flush;
+		return;
+	}
 
 	string line;
 	/*
-	 code help
-	 https://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c#14266139
-	 */
+	code help
+	https://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c#14266139
+	*/
 	while(getline(myfile,line)){
 
 		size_t pos = 0;
@@ -36,8 +37,10 @@ void TCSVReader::ReadFile(){
 		}
 		pos= line.find("\n");
 		token = line.substr(0, pos);
-		fValueVector.push_back(atof(token.c_str()));
+		Double_t valueBuffer=atof(token.c_str());
+		fValueVector.push_back(valueBuffer);
 	}
+
 	fNumOfData=fValueVector.size()/4;
 	myfile.close();
 }

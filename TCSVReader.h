@@ -23,35 +23,52 @@ using std::string;
 using std::atof;
 using std::vector;
 
+struct Point{
+  Double_t x;
+  Double_t y;
+  Double_t sx;
+  Double_t sy;
+};
+
 class TCSVReader:public TObject{
 private:
-    TString fExtension;
-    TString fFilename;
-    Int_t fNumberOfLines;
-    vector<Double_t> fValueVector;
-    TTree *fTree;
-    Int_t fNumOfData;//one per point
-    //Int_t fNumOfValues; //4*numOfData
-    Int_t fNumOfValues() const{return 4*this->fNumOfData;};
+  TString fExtension;
+  TString fFilename;
+  TString fContainer;
+  Int_t fNumberOfLines;
+  vector<Double_t> fValueVector;
+  TTree *fTree;
+  Int_t fNumOfData;//one per point
+  //Int_t fNumOfValues; //4*numOfData
+  inline Int_t fNumOfValues() const{return 4*this->fNumOfData;};
 
-    void ReadFile();
-    void FillTree();
+  void ReadFile();
+  void FillTree();
+  void ReadTree();
+  void SaveTree();
 
 public:
-    TCSVReader(const TString&);
-    ~TCSVReader();
+  TCSVReader(const TString&);
+  ~TCSVReader();
 
-    Double_t *GetX();
-    Double_t *GetY();
-    Double_t *GetSigmaX();
-    Double_t *GetSigmaY();
-    void SaveTree();
-    inline Int_t GetSize(){return fNumOfData;};
+  Double_t *GetX();
+  Double_t *GetY();
+  Double_t *GetSigmaX();
+  Double_t *GetSigmaY();
 
-    TGraph *GetTGraphErrors();
-    TGraph *GetTGraph();
+  inline TTree * GetTTree(){
+    ReadTree();
+    return fTree;
+  };
+  
+  inline void Save(){SaveTree();};
 
-    ClassDef(TCSVReader,0);
+  inline Int_t GetSize(){return fNumOfData;};
+
+  TGraph *GetTGraphErrors();
+  TGraph *GetTGraph();
+
+  ClassDef(TCSVReader,0);
 };
 
 #endif

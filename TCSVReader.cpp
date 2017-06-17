@@ -1,6 +1,6 @@
 #include "TCSVReader.h"
 
-TCSVReader::TCSVReader(const TString &name):TObject(),fNumberOfLines(0),fFilename(name){
+TCSVReader::TCSVReader(const TString &name):TObject(),fNumberOfLines(0),fFilename(name),fContainer("TCSVReader.root"){
 	this->ReadFile();
 }
 
@@ -47,26 +47,54 @@ void TCSVReader::ReadFile(){
 
 void TCSVReader::FillTree(){
 	fTree=new TTree();
-	Double_t valueBuffer[2][2];
-	fTree->Branch("x",&valueBuffer[0][0]);
-	fTree->Branch("y",&valueBuffer[1][0]);
-	fTree->Branch("sx",&valueBuffer[0][1]);
-	fTree->Branch("sy",&valueBuffer[1][1]);
+	Point pBuffer;
+	fTree->Branch("Values",&pBuffer);
 
 	for(Int_t i=0, j=0;i<fNumOfValues();i+=4){
-		valueBuffer[0][0]=fValueVector[i];
-		valueBuffer[1][0]=fValueVector[i+1];
-		valueBuffer[0][1]=fValueVector[i+2];
-		valueBuffer[1][1]=fValueVector[i+3];
+		pBuffer.x=fValueVector[i];
+		pBuffer.y=fValueVector[i+1];
+		pBuffer.sx=fValueVector[i+2];
+		pBuffer.sy=fValueVector[i+3];
 		fTree->Fill();
 	}
 
-
 }
+
+void TCSVReader::ReadTree(){
+	ifstream  f(fContainer);
+	if(f.good()){
+		f.close();
+		TFile *file=new TFile(fContainer,"READ");
+		fValueVector.clear();
+
+		file->cd();
+		TTree *tree;
+		file->GetObject("TreeData",tree);
+
+		if(tree) fTree=tree;
+
+		Point *pBuffer=new Point();
+		tree->SetBranchAddress("Values",&pBuffer);
+
+		for(int i=0;i<tree->GetEntries();i++){
+			tree->GetEntry(i);
+			fValueVector.push_back(pBuffer->x);
+			fValueVector.push_back(pBuffer->y);
+			fValueVector.push_back(pBuffer->sx);
+			fValueVector.push_back(pBuffer->sy);
+		}
+
+		fNumOfData=fValueVector.size()/4;
+
+		file->Close();
+	}else{
+		SaveTree();
+	}
+};
 
 void TCSVReader::SaveTree(){
 	this->FillTree();
-	TFile *file=new TFile(fFilename.Append(".root"),"RECREATE");
+	TFile *file=new TFile(fContainer,"RECREATE");
 
 	file->cd();
 	fTree->Write("TreeData",TObject::kOverwrite);

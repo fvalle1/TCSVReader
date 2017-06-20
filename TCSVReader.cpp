@@ -1,6 +1,6 @@
 #include "TCSVReader.h"
 
-TCSVReader::TCSVReader(const TString &name):TObject(),fNumberOfLines(0),fFilename(name),fContainer("TCSVReader.root"){
+TCSVReader::TCSVReader(const TString &name):TObject(),fNumberOfLines(0),fFilename(name),fTreeFilled(kFALSE),fContainer("TCSVReader.root"){
 	this->ReadFile();
 }
 
@@ -43,6 +43,7 @@ void TCSVReader::ReadFile(){
 
 	fNumOfData=fValueVector.size()/4;
 	myfile.close();
+    this->FillTree();
 }
 
 void TCSVReader::FillTree(){
@@ -57,7 +58,7 @@ void TCSVReader::FillTree(){
 		pBuffer.sy=fValueVector[i+3];
 		fTree->Fill();
 	}
-
+    fTreeFilled=kTRUE;
 }
 
 void TCSVReader::ReadTree(){
@@ -78,10 +79,10 @@ void TCSVReader::ReadTree(){
 
 		for(int i=0;i<tree->GetEntries();i++){
 			tree->GetEntry(i);
-			fValueVector.push_back(pBuffer->x);
-			fValueVector.push_back(pBuffer->y);
-			fValueVector.push_back(pBuffer->sx);
-			fValueVector.push_back(pBuffer->sy);
+			fValueVector.push_back(pBuffer->GetX());
+			fValueVector.push_back(pBuffer->GetY());
+			fValueVector.push_back(pBuffer->GetSx());
+			fValueVector.push_back(pBuffer->GetSy());
 		}
 
 		fNumOfData=fValueVector.size()/4;
@@ -103,36 +104,65 @@ void TCSVReader::SaveTree(){
 }
 
 Double_t* TCSVReader::GetX(){
-	Double_t *x=new Double_t[fNumOfData];
-	for(Int_t i=0, j=0;i<fNumOfValues();i+=4){
-		x[j++]=fValueVector[i];
-	}
-	return x;
+    return this->Get(&Point::GetX);
 }
 
 Double_t* TCSVReader::GetY(){
-	Double_t *y=new Double_t[fNumOfData];
-	for(Int_t i=1,j=0;i<fNumOfValues();i+=4){
-		y[j++]=fValueVector[i];
-	}
-	return y;
+    return this->Get(&Point::GetY);
 }
 
 Double_t* TCSVReader::GetSigmaX(){
-	Double_t *sx=new Double_t[fNumOfData];
-	for(Int_t i=2,j=0;i<fNumOfValues();i+=4){
-		sx[j++]=fValueVector[i];
-	}
-	return sx;
+    return this->Get(&Point::GetSx);
 }
 
 Double_t* TCSVReader::GetSigmaY(){
-	Double_t *sy=new Double_t[fNumOfData];
-	for(Int_t i=3,j=0;i<fNumOfValues();i+=4){
-		sy[j++]=fValueVector[i];
-	}
-	return sy;
+    return this->Get(&Point::GetSy);
 }
+
+Double_t* TCSVReader::Get(Double_t (Point::*funky)() const){
+    Double_t* toReturn=new Double_t[fTree->GetEntries()];
+    if(fTreeFilled){
+        Point *iter=new Point();
+        fTree->SetBranchAddress("Values",&iter);
+        for(Int_t i=0;i<fTree->GetEntries();i++){
+            fTree->GetEntry(i);
+            toReturn[i]=(iter->*funky)();
+        }
+        return toReturn;
+    }else
+        return NULL;
+}
+//Double_t* TCSVReader::GetX(){
+//	Double_t *x=new Double_t[fNumOfData];
+//	for(Int_t i=0, j=0;i<fNumOfValues();i+=4){
+//		x[j++]=fValueVector[i];
+//	}
+//	return x;
+//}
+//
+//Double_t* TCSVReader::GetY(){
+//	Double_t *y=new Double_t[fNumOfData];
+//	for(Int_t i=1,j=0;i<fNumOfValues();i+=4){
+//		y[j++]=fValueVector[i];
+//	}
+//	return y;
+//}
+//
+//Double_t* TCSVReader::GetSigmaX(){
+//	Double_t *sx=new Double_t[fNumOfData];
+//	for(Int_t i=2,j=0;i<fNumOfValues();i+=4){
+//		sx[j++]=fValueVector[i];
+//	}
+//	return sx;
+//}
+//
+//Double_t* TCSVReader::GetSigmaY(){
+//	Double_t *sy=new Double_t[fNumOfData];
+//	for(Int_t i=3,j=0;i<fNumOfValues();i+=4){
+//		sy[j++]=fValueVector[i];
+//	}
+//	return sy;
+//}
 
 TGraph* TCSVReader::GetTGraphErrors(){
 	return new TGraphErrors(fNumOfData,this->GetX(),this->GetY(),this->GetSigmaX(),this->GetSigmaY());

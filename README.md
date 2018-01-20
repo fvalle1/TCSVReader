@@ -20,4 +20,13 @@ if you're running root6 use following commands:
 
 # Sample
 
-[sample.C](sample.C) is a simple macro which use this code
+```cpp
+void sample(){
+  TCSVReader *reader=new TCSVReader("test.csv");
+  TGraph *g=reader->GetTGraphErrors();
+  g->Draw();
+  return;
+}
+```
+
+this code is in [sample.C](sample.C)
